@@ -1,4 +1,4 @@
-package com.demo.HotelReservationAPI.Model.User;
+package com.demo.HotelReservationAPI.Model;
 
 public abstract class User {
     private int id;
