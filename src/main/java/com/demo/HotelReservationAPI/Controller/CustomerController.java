@@ -46,4 +46,9 @@ public class CustomerController {
     public List<CustomerDTO> getAllCustomers(){
         return service.getAllCustomers();
     }
+
+    @GetMapping("/getCustomerById")
+    public CustomerDTO getCustomerById(@RequestParam(value = "id") Long id){
+        return service.getCustomerById(id);
+    }
 }

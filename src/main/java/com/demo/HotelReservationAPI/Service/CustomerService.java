@@ -62,4 +62,9 @@ public class CustomerService {
         customers.forEach(customer -> customerDTOs.add(toDTO(customer)));
         return customerDTOs;
     }
+
+    public CustomerDTO getCustomerById(Long id) {
+        CustomerDTO customerDTO = toDTO(repository.findByCustomerID(id));
+        return customerDTO;
+    }
 }
