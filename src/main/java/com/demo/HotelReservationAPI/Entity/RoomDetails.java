@@ -1,5 +1,6 @@
 package com.demo.HotelReservationAPI.Entity;
 
+import com.demo.HotelReservationAPI.Enum.RoomType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,9 +28,11 @@ public class RoomDetails {
     @Column(name = "ROOM_ID")
     private Long id;
 
+    @Column(name = "ROOM_NUMBER")
     private String roomNumber;
 
-    private String roomType;
+    @Column(name = "ROOM_TYPE")
+    private RoomType roomType;
 
     @ManyToOne
     @JoinColumn(name = "HOTEL_ID")
