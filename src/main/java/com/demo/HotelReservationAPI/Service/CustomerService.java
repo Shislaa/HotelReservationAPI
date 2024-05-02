@@ -31,7 +31,7 @@ public class CustomerService {
         customerDTO.setState(customerDetails.getState());
         customerDTO.setCountry(customerDetails.getCountry());
         customerDTO.setZip(customerDetails.getZip());
-        customerDTO.setBookingList(customerDetails.getBookingList());
+//        customerDTO.setBookingList(customerDetails.getBookingList());
         return customerDTO;
     }
 
@@ -46,7 +46,7 @@ public class CustomerService {
         customerDetails.setState(customerDTO.getState());
         customerDetails.setCountry(customerDTO.getCountry());
         customerDetails.setZip(customerDTO.getZip());
-        customerDetails.setBookingList(customerDTO.getBookingList());
+//        customerDetails.setBookingList(customerDTO.getBookingList());
         return customerDetails;
 
     }

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 @Entity
@@ -14,7 +15,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Getter
 @Setter
-public class BookingDetails {
+public class BookingDetails implements Serializable {
     @Id
     @SequenceGenerator(
             name = "BOOKING_DETAILS_SEQ",

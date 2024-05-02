@@ -1,0 +1,27 @@
+{
+        "hotelName": "Ceraton3",
+        "hotelAddress": "Ceraton3",
+        "hotelCity": "Ceraton3",
+        "hotelState": "Ceraton3",
+        "hotelCountry": "Ceraton3",
+        "hotelZip": "Ceraton3",
+        "hotelPhone": "1232132132",
+        "hotelEmail": "Ceraton3@gmail.com",
+        "ownerName": "Ceraton3",
+        "ownerPhone": "0909270898",
+        "ownerEmail": "Ceraton3@gmail.com",
+        "rooms": [
+            {
+                "roomNumber": "A01",
+                "roomType": "SINGLE_BED"
+            },
+            {
+                "roomNumber": "A02",
+                "roomType": "SINGLE_BED"
+            },
+            {
+                "roomNumber": "B0101",
+                "roomType": "KING_SIZE"
+            }
+        ]
+}

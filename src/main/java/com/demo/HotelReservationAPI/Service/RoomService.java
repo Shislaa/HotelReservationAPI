@@ -1,7 +1,9 @@
 package com.demo.HotelReservationAPI.Service;
 
-import com.demo.HotelReservationAPI.DTO.RoomDTO;
+import com.demo.HotelReservationAPI.DTO.RoomRequestDto;
+import com.demo.HotelReservationAPI.DTO.RoomResponseDto;
 import com.demo.HotelReservationAPI.Entity.RoomDetails;
+import com.demo.HotelReservationAPI.Repository.HotelDetailsRepository;
 import com.demo.HotelReservationAPI.Repository.RoomDetailsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,38 +15,45 @@ import java.util.List;
 public class RoomService {
     private RoomDetailsRepository repository;
 
+    private HotelDetailsRepository hotelDetailsRepository;
+
     @Autowired
-    public RoomService (RoomDetailsRepository repository) {
+    public RoomService (RoomDetailsRepository repository,
+                        HotelDetailsRepository hotelDetailsRepository) {
         this.repository = repository;
+        this.hotelDetailsRepository = hotelDetailsRepository;
     }
 
-    public RoomDTO toDTO(RoomDetails roomDetails) {
-        RoomDTO roomDTO = new RoomDTO();
-        roomDTO.setRoomId(roomDetails.getId());
-        roomDTO.setRoomNumber(roomDetails.getRoomNumber());
-        roomDTO.setRoomType(roomDetails.getRoomType());
-        roomDTO.setHotel(roomDetails.getHotel());
-        roomDTO.setBookingList(roomDetails.getBookingList());
-        return roomDTO;
+    public RoomResponseDto toDTO(RoomDetails roomDetails) {
+        RoomResponseDto roomResponseDto = new RoomResponseDto();
+        roomResponseDto.setRoomId(roomDetails.getId());
+        roomResponseDto.setRoomNumber(roomDetails.getRoomNumber());
+        roomResponseDto.setRoomType(roomDetails.getRoomType());
+        roomResponseDto.setHotelId(roomDetails.getHotel().getHotelId());
+//        roomDTO.setBookingList(roomDetails.getBookingList());
+        return roomResponseDto;
     }
 
-    public RoomDetails toEntity(RoomDTO roomDTO) {
+    public RoomDetails toEntity(RoomRequestDto requestDto) {
         RoomDetails roomDetails = new RoomDetails();
-        roomDetails.setRoomNumber(roomDTO.getRoomNumber());
-        roomDetails.setRoomType(roomDTO.getRoomType());
-        roomDetails.setHotel(roomDTO.getHotel());
-        roomDetails.setBookingList(roomDTO.getBookingList());
+        roomDetails.setRoomNumber(requestDto.getRoomNumber());
+        roomDetails.setRoomType(requestDto.getRoomType());
+        roomDetails.setHotel(hotelDetailsRepository.findByHotelId(requestDto.getHotelId()));
         return roomDetails;
     }
 
-    public void addRoom(RoomDTO dto) {
+    public void addRoom(RoomRequestDto dto) {
         repository.save(toEntity(dto));
     }
 
-    public List<RoomDTO> getAllRooms() {
+    public List<RoomResponseDto> getAllRooms() {
         List<RoomDetails> rooms = repository.findAll();
-        List<RoomDTO> roomDTOs = new ArrayList<RoomDTO>();
-        rooms.forEach(room -> roomDTOs.add(toDTO(room)));
-        return roomDTOs;
+        List<RoomResponseDto> roomResponseDtos = new ArrayList<RoomResponseDto>();
+        rooms.forEach(room -> roomResponseDtos.add(toDTO(room)));
+        return roomResponseDtos;
+    }
+
+    public RoomResponseDto findRoomById(Long id) {
+        return toDTO(repository.findById(id));
     }
 }

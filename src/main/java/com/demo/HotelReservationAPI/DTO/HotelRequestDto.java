@@ -1,7 +1,5 @@
 package com.demo.HotelReservationAPI.DTO;
 
-import com.demo.HotelReservationAPI.Entity.BookingDetails;
-import com.demo.HotelReservationAPI.Entity.RoomDetails;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public class HotelDTO {
+public class HotelRequestDto {
 
     private String hotelName;
 
@@ -37,7 +35,7 @@ public class HotelDTO {
 
     private String ownerEmail;
 
-    private List<RoomDetails> rooms;
+    private List<RoomRequestDto> rooms;
 
-    private List<BookingDetails> bookingList;
+//    private List<BookingDetails> bookingList;
 }

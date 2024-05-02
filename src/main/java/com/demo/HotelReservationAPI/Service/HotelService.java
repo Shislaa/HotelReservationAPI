@@ -1,7 +1,11 @@
 package com.demo.HotelReservationAPI.Service;
 
-import com.demo.HotelReservationAPI.DTO.HotelDTO;
+import com.demo.HotelReservationAPI.DTO.HotelRequestDto;
+import com.demo.HotelReservationAPI.DTO.HotelResponseDto;
+import com.demo.HotelReservationAPI.DTO.RoomRequestDto;
+import com.demo.HotelReservationAPI.DTO.RoomResponseDto;
 import com.demo.HotelReservationAPI.Entity.HotelDetails;
+import com.demo.HotelReservationAPI.Entity.RoomDetails;
 import com.demo.HotelReservationAPI.Repository.HotelDetailsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,13 +18,18 @@ public class HotelService {
 
     private HotelDetailsRepository repository;
 
+    private RoomService roomService;
+
     @Autowired
-    public HotelService(HotelDetailsRepository repository) {
+    public HotelService(HotelDetailsRepository repository,
+                        RoomService roomService) {
         this.repository = repository;
+        this.roomService = roomService;
     }
 
-    public HotelDTO toDTO(HotelDetails hotelDetails) {
-        HotelDTO dto = new HotelDTO();
+    public HotelResponseDto toDTO(HotelDetails hotelDetails) {
+        HotelResponseDto dto = new HotelResponseDto();
+        dto.setHotelId(hotelDetails.getHotelId());
         dto.setHotelCity(hotelDetails.getHotelCity());
         dto.setHotelName(hotelDetails.getHotelName());
         dto.setHotelAddress(hotelDetails.getHotelAddress());
@@ -32,12 +41,15 @@ public class HotelService {
         dto.setOwnerName(hotelDetails.getOwnerName());
         dto.setOwnerEmail(hotelDetails.getOwnerEmail());
         dto.setOwnerPhone(hotelDetails.getOwnerPhone());
-        dto.setRooms(hotelDetails.getRooms());
-        dto.setBookingList(hotelDetails.getBookingList());
+        List<RoomResponseDto> roomResponseDtoList = new ArrayList<>();
+        hotelDetails.getRooms().forEach(room -> {
+            roomResponseDtoList.add(roomService.toDTO(room));});
+        dto.setRooms(roomResponseDtoList);
+//        dto.setBookingList(hotelDetails.getBookingList());
         return dto;
     }
 
-    public HotelDetails toEntity(HotelDTO dto) {
+    public HotelDetails toEntity(HotelRequestDto dto) {
         HotelDetails hotelDetails = new HotelDetails();
         hotelDetails.setHotelCity(dto.getHotelCity());
         hotelDetails.setHotelName(dto.getHotelName());
@@ -50,19 +62,26 @@ public class HotelService {
         hotelDetails.setOwnerName(dto.getOwnerName());
         hotelDetails.setOwnerEmail(dto.getOwnerEmail());
         hotelDetails.setOwnerPhone(dto.getOwnerPhone());
-        hotelDetails.setRooms(dto.getRooms());
-        hotelDetails.setBookingList(dto.getBookingList());
+        List<RoomDetails> roomDetailsList = new ArrayList<>();
+//        dto.getRooms().forEach(room -> {roomDetailsList.add(roomService.toEntity(room));});
+        hotelDetails.setRooms(roomDetailsList);
+//        hotelDetails.setBookingList(dto.getBookingList());
         return hotelDetails;
     }
 
-    public void addHotel(HotelDTO dto) {
-        HotelDetails hotelDetails = toEntity(dto);
-        repository.save(hotelDetails);
+    public void addHotel(HotelRequestDto dto) {
+        HotelDetails hotelDetails = repository.save(toEntity(dto));
+        Long hotelId = hotelDetails.getHotelId();
+        List<RoomRequestDto> roomRequestDtoList = dto.getRooms();
+        roomRequestDtoList.forEach(room -> {
+            room.setHotelId(hotelId);
+            roomService.addRoom(room);
+        });
     }
 
-    public List<HotelDTO> getAllHotels() {
+    public List<HotelResponseDto> getAllHotels() {
         List<HotelDetails> hotelList = repository.findAll();
-        List<HotelDTO> dtoList = new ArrayList<>();
+        List<HotelResponseDto> dtoList = new ArrayList<>();
         hotelList.forEach(hotelDetails -> dtoList.add(toDTO(hotelDetails)));
         return dtoList;
     }

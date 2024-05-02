@@ -33,6 +33,6 @@ public class CustomerDTO {
 
     private String country;
 
-    private List<BookingDetails> bookingList;
+//    private List<BookingDetails> bookingList;
 
 }
