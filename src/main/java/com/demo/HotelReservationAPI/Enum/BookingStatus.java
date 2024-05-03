@@ -1,2 +1,7 @@
-package com.demo.HotelReservationAPI.Enum;public enum BookingStatus {
+package com.demo.HotelReservationAPI.Enum;
+
+public enum BookingStatus {
+    CONFIRMED,
+
+    CANCEL
 }

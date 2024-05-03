@@ -3,6 +3,7 @@ package com.demo.HotelReservationAPI.Service;
 import com.demo.HotelReservationAPI.DTO.BookingRequestDto;
 import com.demo.HotelReservationAPI.DTO.BookingResponseDto;
 import com.demo.HotelReservationAPI.Entity.BookingDetails;
+import com.demo.HotelReservationAPI.Enum.BookingStatus;
 import com.demo.HotelReservationAPI.Repository.BookingDetailsRepository;
 import com.demo.HotelReservationAPI.Repository.CustomerDetailsRepository;
 import com.demo.HotelReservationAPI.Repository.HotelDetailsRepository;
@@ -47,6 +48,7 @@ public class BookingService {
         bookingResponseDto.setRoomType(bookingDetails.getRoom().getRoomType());
         bookingResponseDto.setCustomerId(bookingDetails.getCustomer().getCustomerID());
         bookingResponseDto.setCustomerName(bookingDetails.getCustomer().getFirstName() + " " + bookingDetails.getCustomer().getLastName());
+        bookingResponseDto.setStatus(bookingDetails.getStatus());
         return bookingResponseDto;
     }
 
@@ -62,6 +64,7 @@ public class BookingService {
 
     public void addBooking(BookingRequestDto bookingRequestDto) {
         BookingDetails bookingDetails = toBookingDetails(bookingRequestDto);
+        bookingDetails.setStatus(BookingStatus.CONFIRMED);
         bookingDetailsRepository.save(bookingDetails);
     }
 
@@ -72,6 +75,12 @@ public class BookingService {
             bookingResponseDtos.add(toBookingDto(booking));
         });
         return bookingResponseDtos;
+    }
+
+    public void cancelBooking(Long bookingId) {
+       BookingDetails bookingDetails = bookingDetailsRepository.getById(bookingId);
+       bookingDetails.setStatus(BookingStatus.CANCEL);
+       bookingDetailsRepository.save(bookingDetails);
     }
 
     public List<BookingResponseDto> getBookingsByCustomerId(Long customerId) {

@@ -29,6 +29,11 @@ public class BookingController {
         return bookingService.getAllBookings();
     }
 
+    @PostMapping("/cancelBooking")
+    public void cancelBooking(@RequestParam Long bookingId) {
+        bookingService.cancelBooking(bookingId);
+    }
+
     @GetMapping("/getBookingByCustomerId")
     public List<BookingResponseDto> getBookingByCustomerId(@RequestParam Long customerId) {
         return bookingService.getBookingsByCustomerId(customerId);

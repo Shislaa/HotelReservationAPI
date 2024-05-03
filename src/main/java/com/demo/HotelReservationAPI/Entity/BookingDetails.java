@@ -1,5 +1,6 @@
 package com.demo.HotelReservationAPI.Entity;
 
+import com.demo.HotelReservationAPI.Enum.BookingStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,6 +34,9 @@ public class BookingDetails implements Serializable {
 
     @Column(name = "END_DATE")
     private Date endDate;
+
+    @Column(name = "STATUS")
+    private BookingStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CUSTOMER_ID")

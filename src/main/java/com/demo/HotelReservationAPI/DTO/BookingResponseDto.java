@@ -1,5 +1,6 @@
 package com.demo.HotelReservationAPI.DTO;
 
+import com.demo.HotelReservationAPI.Enum.BookingStatus;
 import com.demo.HotelReservationAPI.Enum.RoomType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,6 +17,7 @@ public class BookingResponseDto {
     private Long bookingId;
     private Date startDate;
     private Date endDate;
+    private BookingStatus status;
     private Long customerId;
     private String customerName;
     private Long hotelId;

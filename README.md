@@ -11,7 +11,7 @@ Features for Booking:
 - Search
 - Update
 - View (done)
-- Cancel
+- Cancel (done)
 - Create (done)
 
 Application flow: Create User -> Create Hotel -> Add Rooms to Hotels -> Create Booking
