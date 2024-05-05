@@ -8,10 +8,10 @@ Prerequisite:
 Swagger-UI for API testing: http://localhost:8080/swagger-ui.html
 
 Features for Booking:
-- Search
-- Update
+- Search (ready for testing)
+- Update (ready for testing)
 - View (done)
-- Cancel (done)
+- Cancel (ready for testing)
 - Create (done)
 
 Application flow: Create User -> Create Hotel -> Add Rooms to Hotels -> Create Booking
