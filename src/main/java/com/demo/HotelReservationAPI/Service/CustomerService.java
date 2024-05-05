@@ -1,6 +1,9 @@
 package com.demo.HotelReservationAPI.Service;
 
-import com.demo.HotelReservationAPI.DTO.CustomerDTO;
+import com.demo.HotelReservationAPI.DTO.BookingResponseDto;
+import com.demo.HotelReservationAPI.DTO.CustomerRequestDto;
+import com.demo.HotelReservationAPI.DTO.CustomerResponseDto;
+import com.demo.HotelReservationAPI.Entity.BookingDetails;
 import com.demo.HotelReservationAPI.Entity.CustomerDetails;
 import com.demo.HotelReservationAPI.Repository.CustomerDetailsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,59 +15,62 @@ import java.util.List;
 @Service
 public class CustomerService {
 
-    private final CustomerDetailsRepository repository;
+    private final CustomerDetailsRepository customerDetailsRepository;
+
+    private BookingService bookingService;
 
     @Autowired
-    public CustomerService(CustomerDetailsRepository repository) {
-        this.repository = repository;
+    public CustomerService(CustomerDetailsRepository customerDetailsRepository,
+                           BookingService bookingService) {
+        this.customerDetailsRepository = customerDetailsRepository;
+        this.bookingService = bookingService;
     }
 
-    public CustomerDTO toDTO (CustomerDetails customerDetails) {
-        CustomerDTO customerDTO = new CustomerDTO();
-        customerDTO.setFirstName(customerDetails.getFirstName());
-        customerDTO.setLastName(customerDetails.getLastName());
-        customerDTO.setEmail(customerDetails.getEmail());
-        customerDTO.setId(customerDetails.getCustomerID());
-        customerDTO.setPhone(customerDetails.getPhone());
-        customerDTO.setAddress(customerDetails.getAddress());
-        customerDTO.setCity(customerDetails.getCity());
-        customerDTO.setState(customerDetails.getState());
-        customerDTO.setCountry(customerDetails.getCountry());
-        customerDTO.setZip(customerDetails.getZip());
-//        customerDTO.setBookingList(customerDetails.getBookingList());
-        return customerDTO;
+    public CustomerResponseDto toDTO (CustomerDetails customerDetails) {
+        CustomerResponseDto customerResDto = new CustomerResponseDto();
+        customerResDto.setFirstName(customerDetails.getFirstName());
+        customerResDto.setLastName(customerDetails.getLastName());
+        customerResDto.setEmail(customerDetails.getEmail());
+        customerResDto.setId(customerDetails.getCustomerID());
+        customerResDto.setPhone(customerDetails.getPhone());
+        List<BookingDetails> bookingDetailsList = customerDetails.getBookingList();
+        List<BookingResponseDto> bookingResponseDtoList = new ArrayList<>();
+        bookingDetailsList.forEach(booking -> {
+            bookingResponseDtoList.add(bookingService.toBookingDto(booking));
+        });
+        customerResDto.setBookings(bookingResponseDtoList);
+        return customerResDto;
     }
 
-    private CustomerDetails toEntity (CustomerDTO customerDTO) {
+    private CustomerDetails toEntity (CustomerRequestDto customerRequestDto) {
         CustomerDetails customerDetails = new CustomerDetails();
-        customerDetails.setFirstName(customerDTO.getFirstName());
-        customerDetails.setLastName(customerDTO.getLastName());
-        customerDetails.setEmail(customerDTO.getEmail());
-        customerDetails.setPhone(customerDTO.getPhone());
-        customerDetails.setAddress(customerDTO.getAddress());
-        customerDetails.setCity(customerDTO.getCity());
-        customerDetails.setState(customerDTO.getState());
-        customerDetails.setCountry(customerDTO.getCountry());
-        customerDetails.setZip(customerDTO.getZip());
-//        customerDetails.setBookingList(customerDTO.getBookingList());
+        customerDetails.setFirstName(customerRequestDto.getFirstName());
+        customerDetails.setLastName(customerRequestDto.getLastName());
+        customerDetails.setEmail(customerRequestDto.getEmail());
+        customerDetails.setPhone(customerRequestDto.getPhone());
+        customerDetails.setAddress(customerRequestDto.getAddress());
+        customerDetails.setCity(customerRequestDto.getCity());
+        customerDetails.setState(customerRequestDto.getState());
+        customerDetails.setCountry(customerRequestDto.getCountry());
+        customerDetails.setZip(customerRequestDto.getZip());
         return customerDetails;
 
     }
 
-    public void createCustomer (CustomerDTO customerDTO) {
-        CustomerDetails customerDetails = toEntity(customerDTO);
-        repository.save(customerDetails);
+    public void createCustomer (CustomerRequestDto customerRequestDto) {
+        CustomerDetails customerDetails = toEntity(customerRequestDto);
+        customerDetailsRepository.save(customerDetails);
     }
 
-    public List<CustomerDTO> getAllCustomers() {
-        List<CustomerDetails> customers = repository.findAll();
-        List<CustomerDTO> customerDTOs = new ArrayList<>();
-        customers.forEach(customer -> customerDTOs.add(toDTO(customer)));
-        return customerDTOs;
+    public List<CustomerResponseDto> getAllCustomers() {
+        List<CustomerDetails> customers = customerDetailsRepository.findAll();
+        List<CustomerResponseDto> customerResponseDtos = new ArrayList<>();
+        customers.forEach(customer -> customerResponseDtos.add(toDTO(customer)));
+        return customerResponseDtos;
     }
 
-    public CustomerDTO getCustomerById(Long id) {
-        CustomerDTO customerDTO = toDTO(repository.findByCustomerID(id));
-        return customerDTO;
+    public CustomerResponseDto getCustomerById(Long id) {
+        CustomerResponseDto customerResDto = toDTO(customerDetailsRepository.findByCustomerID(id));
+        return customerResDto;
     }
 }

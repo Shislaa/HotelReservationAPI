@@ -35,6 +35,9 @@ public class BookingDetails implements Serializable {
     @Column(name = "END_DATE")
     private Date endDate;
 
+    @Column (name = "TIME_CREATED")
+    private Date timeCreated;
+
     @Column(name = "STATUS")
     private BookingStatus status;
 

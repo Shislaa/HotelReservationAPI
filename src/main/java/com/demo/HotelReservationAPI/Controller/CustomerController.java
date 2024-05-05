@@ -1,7 +1,7 @@
 package com.demo.HotelReservationAPI.Controller;
 
-import com.demo.HotelReservationAPI.DTO.CustomerDTO;
-import com.demo.HotelReservationAPI.Entity.CustomerDetails;
+import com.demo.HotelReservationAPI.DTO.CustomerRequestDto;
+import com.demo.HotelReservationAPI.DTO.CustomerResponseDto;
 import com.demo.HotelReservationAPI.Service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -29,26 +29,26 @@ public class CustomerController {
                                @RequestParam(value = "state") String state,
                                @RequestParam(value = "zip") String zip,
                                @RequestParam(value = "country") String country){
-        CustomerDTO customerDTO = new CustomerDTO();
-        customerDTO.setFirstName(firstName);
-        customerDTO.setLastName(lastName);
-        customerDTO.setEmail(email);
-        customerDTO.setPhone(phone);
-        customerDTO.setAddress(address);
-        customerDTO.setCity(city);
-        customerDTO.setState(state);
-        customerDTO.setZip(zip);
-        customerDTO.setCountry(country);
-        service.createCustomer(customerDTO);
+        CustomerRequestDto customerRequestDto = new CustomerRequestDto();
+        customerRequestDto.setFirstName(firstName);
+        customerRequestDto.setLastName(lastName);
+        customerRequestDto.setEmail(email);
+        customerRequestDto.setPhone(phone);
+        customerRequestDto.setAddress(address);
+        customerRequestDto.setCity(city);
+        customerRequestDto.setState(state);
+        customerRequestDto.setZip(zip);
+        customerRequestDto.setCountry(country);
+        service.createCustomer(customerRequestDto);
     }
 
     @GetMapping("/getAllCustomer")
-    public List<CustomerDTO> getAllCustomers(){
+    public List<CustomerResponseDto> getAllCustomers(){
         return service.getAllCustomers();
     }
 
     @GetMapping("/getCustomerById")
-    public CustomerDTO getCustomerById(@RequestParam(value = "id") Long id){
+    public CustomerResponseDto getCustomerById(@RequestParam(value = "id") Long id){
         return service.getCustomerById(id);
     }
 }

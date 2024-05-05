@@ -17,6 +17,7 @@ public class BookingResponseDto {
     private Long bookingId;
     private Date startDate;
     private Date endDate;
+    private Date timeCreated;
     private BookingStatus status;
     private Long customerId;
     private String customerName;

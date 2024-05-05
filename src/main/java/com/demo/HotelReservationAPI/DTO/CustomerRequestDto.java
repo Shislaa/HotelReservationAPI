@@ -1,18 +1,15 @@
 package com.demo.HotelReservationAPI.DTO;
 
-import com.demo.HotelReservationAPI.Entity.BookingDetails;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CustomerDTO {
+public class CustomerRequestDto {
     private long id;
 
     private String firstName;
@@ -32,7 +29,5 @@ public class CustomerDTO {
     private String zip;
 
     private String country;
-
-//    private List<BookingDetails> bookingList;
 
 }
