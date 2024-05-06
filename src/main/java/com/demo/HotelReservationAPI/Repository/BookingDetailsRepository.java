@@ -12,9 +12,9 @@ import java.util.List;
 public interface BookingDetailsRepository extends JpaRepository<BookingDetails,Long> {
     List<BookingDetails> findByCustomer_CustomerID(Long customerId);
 
-    BookingDetails findByRoomIdAndStartDateAndEndDate (Long roomId, Date startDate, Date endDate);
+    List<BookingDetails> findByRoomIdAndStartDateLessThanAndEndDateGreaterThan(Long roomId, Date endDate, Date startDate);
 
-    List<BookingDetails> findByHotel_HotelIdAndStartDateAndEndDate (Long hotelId, Date startDate, Date endDate);
+    List<BookingDetails> findByHotel_HotelIdAndStartDateLessThanAndEndDateGreaterThan(Long hotelId, Date endDate , Date startDate);
 
     BookingDetails findByBookingId(Long bookingId);
 }

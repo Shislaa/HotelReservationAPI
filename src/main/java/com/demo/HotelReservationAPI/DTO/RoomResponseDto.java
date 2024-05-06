@@ -19,5 +19,4 @@ public class RoomResponseDto {
 
     private Long hotelId;
 
-//    private List<BookingDetails> bookingList;
 }

@@ -1,20 +1,22 @@
 package com.demo.HotelReservationAPI.DTO;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
-
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 public class BookingRequestDto {
-    private Date startDate;
-    private Date endDate;
+    private String startDate;
+    private String endDate;
     private Long customerId;
     private Long hotelId;
     private Long roomId;
+
+    public BookingRequestDto(Long newRoomId, String newStart, String newEnd) {
+        this.roomId = newRoomId;
+        this.startDate = newStart;
+        this.endDate = newEnd;
+    }
 }

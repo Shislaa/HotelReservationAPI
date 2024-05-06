@@ -4,6 +4,7 @@ import com.demo.HotelReservationAPI.DTO.CustomerRequestDto;
 import com.demo.HotelReservationAPI.DTO.CustomerResponseDto;
 import com.demo.HotelReservationAPI.Service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -48,7 +49,7 @@ public class CustomerController {
     }
 
     @GetMapping("/getCustomerById")
-    public CustomerResponseDto getCustomerById(@RequestParam(value = "id") Long id){
+    public ResponseEntity<Object> getCustomerById(@RequestParam(value = "id") Long id) {
         return service.getCustomerById(id);
     }
 }

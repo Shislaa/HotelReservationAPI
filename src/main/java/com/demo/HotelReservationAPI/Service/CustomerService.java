@@ -7,6 +7,7 @@ import com.demo.HotelReservationAPI.Entity.BookingDetails;
 import com.demo.HotelReservationAPI.Entity.CustomerDetails;
 import com.demo.HotelReservationAPI.Repository.CustomerDetailsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -69,8 +70,12 @@ public class CustomerService {
         return customerResponseDtos;
     }
 
-    public CustomerResponseDto getCustomerById(Long id) {
-        CustomerResponseDto customerResDto = toDTO(customerDetailsRepository.findByCustomerID(id));
-        return customerResDto;
+    public ResponseEntity<Object> getCustomerById(Long id) {
+        CustomerDetails customer = customerDetailsRepository.findByCustomerID(id);
+        if (customer == null) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok().body(toDTO(customer));
+        }
     }
 }

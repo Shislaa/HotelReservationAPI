@@ -2,7 +2,6 @@ package com.demo.HotelReservationAPI.Service;
 
 import com.demo.HotelReservationAPI.DTO.BookingRequestDto;
 import com.demo.HotelReservationAPI.DTO.BookingResponseDto;
-import com.demo.HotelReservationAPI.DTO.RoomResponseDto;
 import com.demo.HotelReservationAPI.Entity.BookingDetails;
 import com.demo.HotelReservationAPI.Entity.RoomDetails;
 import com.demo.HotelReservationAPI.Enum.BookingStatus;
@@ -10,10 +9,12 @@ import com.demo.HotelReservationAPI.Repository.BookingDetailsRepository;
 import com.demo.HotelReservationAPI.Repository.CustomerDetailsRepository;
 import com.demo.HotelReservationAPI.Repository.HotelDetailsRepository;
 import com.demo.HotelReservationAPI.Repository.RoomDetailsRepository;
+import com.demo.HotelReservationAPI.Util.Helper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.awt.print.Book;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -46,9 +47,11 @@ public class BookingService {
     public BookingResponseDto toBookingDto(BookingDetails bookingDetails) {
         BookingResponseDto bookingResponseDto = new BookingResponseDto();
         bookingResponseDto.setBookingId(bookingDetails.getBookingId());
+
         bookingResponseDto.setStartDate(bookingDetails.getStartDate());
         bookingResponseDto.setEndDate(bookingDetails.getEndDate());
         bookingResponseDto.setTimeCreated(bookingDetails.getTimeCreated());
+
         bookingResponseDto.setHotelId(bookingDetails.getHotel().getHotelId());
         bookingResponseDto.setHotelName(bookingDetails.getHotel().getHotelName());
         bookingResponseDto.setRoomId(bookingDetails.getRoom().getId());
@@ -62,8 +65,8 @@ public class BookingService {
 
     protected BookingDetails toBookingDetails(BookingRequestDto bookingRequestDto) {
         BookingDetails bookingDetails = new BookingDetails();
-        bookingDetails.setStartDate(bookingRequestDto.getStartDate());
-        bookingDetails.setEndDate(bookingRequestDto.getEndDate());
+        bookingDetails.setStartDate(Helper.convertStringToDate(bookingRequestDto.getStartDate()));
+        bookingDetails.setEndDate(Helper.convertStringToDate(bookingRequestDto.getEndDate()));
         bookingDetails.setTimeCreated(Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant()));
         bookingDetails.setHotel(hotelDetailsRepository.findByHotelId(bookingRequestDto.getHotelId()));
         bookingDetails.setRoom(roomDetailsRepository.findById(bookingRequestDto.getRoomId()));
@@ -91,54 +94,68 @@ public class BookingService {
         return bookingResponseDtos;
     }
 
-    public BookingResponseDto cancelBooking(Long bookingId) {
-       BookingDetails bookingDetails = bookingDetailsRepository.getById(bookingId);
-       bookingDetails.setStatus(BookingStatus.CANCEL);
-       return toBookingDto(bookingDetailsRepository.save(bookingDetails));
+    public ResponseEntity<Object> cancelBooking(Long bookingId) {
+       BookingDetails bookingDetails = bookingDetailsRepository.findByBookingId(bookingId);
+       if (bookingDetails == null) {
+           return ResponseEntity.notFound().build();
+       } else {
+           bookingDetails.setStatus(BookingStatus.CANCEL);
+           return ResponseEntity.ok(toBookingDto(bookingDetailsRepository.save(bookingDetails)));
+       }
     }
 
-    public List<BookingResponseDto> getBookingsByCustomerId(Long customerId) {
+    public ResponseEntity<Object> getBookingsByCustomerId(Long customerId) {
         List<BookingDetails> bookingDetailsList = bookingDetailsRepository.findByCustomer_CustomerID(customerId);
-        List<BookingResponseDto> bookingResponseDtos = new ArrayList<>();
-        bookingDetailsList.forEach(booking -> {bookingResponseDtos.add(toBookingDto(booking));});
-        return bookingResponseDtos;
+        if (bookingDetailsList.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        } else {
+            List<BookingResponseDto> bookingResponseDtos = new ArrayList<>();
+            bookingDetailsList.forEach(booking -> {bookingResponseDtos.add(toBookingDto(booking));});
+            return ResponseEntity.ok(bookingResponseDtos);
+        }
     }
 
-    private Boolean isBookingValid(BookingRequestDto bookingRequestDto) {
-        Date startDate = bookingRequestDto.getStartDate();
-        Date endDate = bookingRequestDto.getEndDate();
-        Long roomId = bookingRequestDto.getRoomId();
-        BookingDetails booking = bookingDetailsRepository.findByRoomIdAndStartDateAndEndDate(roomId, startDate, endDate);
-        return booking == null;
+    public ResponseEntity<Object> getBookingById(Long bookingId) {
+        BookingDetails bookingDetails = bookingDetailsRepository.findByBookingId(bookingId);
+        if (bookingDetails == null) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(toBookingDto(bookingDetails));
+        }
     }
 
-    public BookingResponseDto getBookingById(Long bookingId) {
-        return toBookingDto(bookingDetailsRepository.findByBookingId(bookingId));
-    }
-
-    public BookingResponseDto updateBooking(Long bookingId,
-                                            Date newStartDate,
-                                            Date newEndDate,
-                                            Long newRoomId) {
+    public ResponseEntity<Object> updateBooking(Long bookingId,
+                                                String newStartDate,
+                                                String newEndDate,
+                                                Long newRoomId) {
         BookingDetails bookingDetails = bookingDetailsRepository.getById(bookingId);
-        if (newStartDate != null) {
-            bookingDetails.setStartDate(newStartDate);
+        updateBookingStartDate(bookingDetails, newStartDate);
+        updateBookingEndDate(bookingDetails, newEndDate);
+        updateBookingRoom(bookingDetails, newRoomId);
+
+        if (!isBookingValid(new BookingRequestDto(bookingDetails.getRoom().getId(), Helper.convertDateToString(bookingDetails.getStartDate()), Helper.convertDateToString(bookingDetails.getEndDate())))) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("This room is not available for this time period");
         }
-        if (newEndDate != null) {
-            bookingDetails.setEndDate(newEndDate);
+        if (!isPeriodValid(bookingDetails.getStartDate(), bookingDetails.getEndDate())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Start date cannot be after end date");
         }
-        if (newRoomId != null) {
-            bookingDetails.setRoom(roomDetailsRepository.findById(newRoomId));
+        if (BookingStatus.CANCEL.equals(bookingDetails.getStatus())) {
+            bookingDetails.setStatus(BookingStatus.CONFIRMED);
         }
-        return toBookingDto(bookingDetailsRepository.save(bookingDetails));
+        return ResponseEntity.ok(toBookingDto(bookingDetailsRepository.save(bookingDetails)));
+    }
+
+    public boolean isPeriodValid(Date startDate, Date endDate) {
+        return endDate.after(startDate);
     }
 
     public List<RoomDetails> searchBookings(Long hotelId,
-                                            Date startDate,
-                                            Date endDate) {
-        List<BookingDetails> bookings = bookingDetailsRepository.findByHotel_HotelIdAndStartDateAndEndDate(hotelId, startDate, endDate);
+                                            String startDate,
+                                            String endDate) {
+        List<BookingDetails> bookings = bookingDetailsRepository.findByHotel_HotelIdAndStartDateLessThanAndEndDateGreaterThan(hotelId, Helper.convertStringToDate(endDate), Helper.convertStringToDate(startDate));
 
         List<RoomDetails> bookedRooms = bookings.stream()
+                .filter(booking -> booking.getStatus() != BookingStatus.CANCEL)
                 .map(BookingDetails::getRoom)
                 .collect(Collectors.toList());
 
@@ -150,6 +167,38 @@ public class BookingService {
         return availableRooms;
     }
 
+    private Boolean isBookingValid(BookingRequestDto bookingRequestDto) {
+        Date startDate = Helper.convertStringToDate(bookingRequestDto.getStartDate());
+        Date endDate = Helper.convertStringToDate(bookingRequestDto.getEndDate());
 
+        if (startDate == null || endDate == null) {
+            throw new IllegalArgumentException("Invalid date format");
+        }
 
+        Long roomId = bookingRequestDto.getRoomId();
+        List<BookingDetails> bookings = bookingDetailsRepository.findByRoomIdAndStartDateLessThanAndEndDateGreaterThan(roomId, endDate, startDate);
+        return hasNoActiveBookings(bookings);
+    }
+
+    private boolean hasNoActiveBookings(List<BookingDetails> bookings) {
+        return bookings.isEmpty() || bookings.stream().allMatch(b -> b.getStatus() == BookingStatus.CANCEL);
+    }
+
+    private void updateBookingStartDate(BookingDetails bookingDetails, String newStartDate) {
+        if (newStartDate != null) {
+            bookingDetails.setStartDate(Helper.convertStringToDate(newStartDate));
+        }
+    }
+
+    private void updateBookingEndDate(BookingDetails bookingDetails, String newEndDate) {
+        if (newEndDate != null) {
+            bookingDetails.setEndDate(Helper.convertStringToDate(newEndDate));
+        }
+    }
+
+    private void updateBookingRoom(BookingDetails bookingDetails, Long newRoomId) {
+        if (newRoomId != null) {
+            bookingDetails.setRoom(roomDetailsRepository.findById(newRoomId));
+        }
+    }
 }

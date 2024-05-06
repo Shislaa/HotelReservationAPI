@@ -30,7 +30,6 @@ public class RoomService {
         roomResponseDto.setRoomNumber(roomDetails.getRoomNumber());
         roomResponseDto.setRoomType(roomDetails.getRoomType());
         roomResponseDto.setHotelId(roomDetails.getHotel().getHotelId());
-//        roomDTO.setBookingList(roomDetails.getBookingList());
         return roomResponseDto;
     }
 
