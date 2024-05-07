@@ -5,9 +5,13 @@ Prerequisite:
 - Java 11
 - Postgres DB
 
-In order to test the application, you would need to install Postgres SQL on your machine, 
-then create `hotelreserve` schema. All the config for DB connection are located in `application.properties`
-
+Install: 
+- Run `mvn clean install`
+- In order to test the application, you would need to install Postgres SQL on your machine, 
+then create `hotelreserve` schema.
+- All the config for DB connection are located in `application.properties`, **feel free to adjust it to fit your local set up.**
+- Uncomment this line in `application.properties`, Hibernate will create the tables in the schema for you to test out
+`#spring.jpa.hibernate.ddl-auto=create`
 
 Swagger-UI for API testing: http://localhost:8080/swagger-ui.html
 
@@ -18,9 +22,12 @@ Features for Booking:
 - Cancel (done)
 - Create (done)
 
-Application flow: Create User -> Create Hotel -> Add Rooms to Hotels -> Create Booking
+Testing Happy Case Flow: Create User -> Create Hotel (Test data can be found under /resources/testData/addHotelData.txt) -> Create Booking
 
-Implementation:
+## Database Desgin
+![DatabaseDesign.png](DatabaseDesign.png)
+
+# Implementation:
 ## Booking 
 `http://localhost:8080/booking/{endpoint_mapping}`
 - Add new Booking (POST) : `/addBooking` 

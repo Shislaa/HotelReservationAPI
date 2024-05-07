@@ -63,7 +63,7 @@ public class BookingService {
         return bookingResponseDto;
     }
 
-    protected BookingDetails toBookingDetails(BookingRequestDto bookingRequestDto) {
+    public BookingDetails toBookingDetails(BookingRequestDto bookingRequestDto) {
         BookingDetails bookingDetails = new BookingDetails();
         bookingDetails.setStartDate(Helper.convertStringToDate(bookingRequestDto.getStartDate()));
         bookingDetails.setEndDate(Helper.convertStringToDate(bookingRequestDto.getEndDate()));
@@ -161,10 +161,9 @@ public class BookingService {
 
         List<RoomDetails> allRoomsInHotel = roomDetailsRepository.findByHotel_HotelId(hotelId);
 
-        List<RoomDetails> availableRooms = allRoomsInHotel.stream()
+        return allRoomsInHotel.stream()
                 .filter(room -> bookedRooms.stream().noneMatch(bookedRoom -> bookedRoom.getId().equals(room.getId())))
                 .collect(Collectors.toList());
-        return availableRooms;
     }
 
     private Boolean isBookingValid(BookingRequestDto bookingRequestDto) {
