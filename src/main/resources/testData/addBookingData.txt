@@ -1,0 +1,7 @@
+{
+  "customerId": 1,
+  "endDate": "2024-05-10",
+  "hotelId": 1,
+  "roomId": 1,
+  "startDate": "2024-05-07"
+}
